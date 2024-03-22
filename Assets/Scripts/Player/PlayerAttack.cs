@@ -148,8 +148,7 @@ public class PlayerAttack : MonoBehaviour
         //2. 리스트 안의 몬스터들을 전체 조회합니다.
         foreach (var one in targetList)
         {
-            EnemyHealth enemy = one.GetComponent<EnemyHealth>();
-            //3. 대쉬 데미지만큼 데미지를 주며 1초 딜레이 2만큼 pushback
+            EnemyHealth enemy = one.GetComponent<EnemyHealth>();            //3. 대쉬 데미지만큼 데미지를 주며 1초 딜레이 2만큼 pushback
             if (enemy != null)
             {
                 StartCoroutine(enemy.StartDamage(DashDamage, transform.position, 1f, 2f));

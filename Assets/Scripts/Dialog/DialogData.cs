@@ -16,3 +16,4 @@ public class DialogData
         Type = type;
     }
 }
+

@@ -8,21 +8,19 @@ public class DSPractice : MonoBehaviour
     public Text OutputName;
     public Text OutputInfo;
 
-    public Text[] Info = new Text[6];
-
     public string abitity;
+    public Text inputText;
+    public Text inputName;
 
+    public Text[] Info = new Text[6];
     public Dictionary<string, int>[] ItemInfo = new Dictionary<string, int>[6];
 
     string[] ItemIntroduce = new string[6];
 
     public void abilityOutput()
     {
-        OutputName.text = Info[0].text;
-        for (int i = 1; i < Info.Length; i++)
-        {
-            OutputInfo.text += $"\n : {Info[i].text}";
-        }
+        OutputName.text = inputName.text;
+        OutputInfo.text += $"\n{abitity} : {inputText.text}";
     }
     public void InfoInput()
     {

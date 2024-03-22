@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -34,10 +34,9 @@ public sealed class DialogManager
     //프로퍼티를 통해 접근
     public static DialogManager Instance
     {
-        get
-        {
+        get { 
             return instance;
-        }
+        } 
     }
     //생성 시 다이얼로그 큐와 다이얼로그 맵을 초기화합니다.
     private DialogManager()
@@ -69,7 +68,7 @@ public sealed class DialogManager
     public void Pop()
     {
         //다이얼로그가 존재할 때
-        if (_currentDialog != null)
+        if(_currentDialog != null)
         {
             //익명 delegate
             //delegate(매개변수 목록) { 실행하고자 하는 코드 };
@@ -78,7 +77,7 @@ public sealed class DialogManager
                 delegate
                 {
                     _currentDialog = null;
-                    if (_dialogQueue.Count > 0)
+                    if(_dialogQueue.Count > 0 )
                     {
                         ShowNext();
                     }
@@ -89,9 +88,9 @@ public sealed class DialogManager
     private void ShowNext()
     {
         //다이얼로그를 리스트에서 첫번째 값을 가져오겠습니다.
-        var next = _dialogQueue[0];
+        DialogData next = _dialogQueue[0];
         //가져온 값의 형태를 확인해 어떤 컨트롤러인지를 확인합니다.
-        var controller = _dialogMap[next.Type].GetComponent<DialogController>();
+        DialogController controller = _dialogMap[next.Type].GetComponent<DialogController>();  
         //조회한 다이얼로그 컨트롤러를 현재의 다이얼로그 컨트롤러로 지정합니다.
         _currentDialog = controller;
         //현재의 다이얼로그를 빌드하겠습니다.
@@ -107,4 +106,90 @@ public sealed class DialogManager
     public bool IsShowing() => _currentDialog != null;
 
 
+}
+
+*/
+
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public enum DialogType { Alert, Confirm, Ranking }
+public sealed class DialogManager
+{
+    #region Fields
+    List<DialogData> _dialogQueue;
+    Dictionary<DialogType, DialogController> _dialogMap;
+    DialogController _currentDialog;
+    #endregion
+
+    #region Singleton
+    private static DialogManager instance = new DialogManager();
+
+    public static DialogManager Instance { get { return instance; } }
+
+    private DialogManager()
+    {
+        _dialogQueue = new List<DialogData>();
+        _dialogMap = new Dictionary<DialogType, DialogController>();
+
+        KeyValuePrepare();
+    }
+    #endregion
+
+    public void KeyValuePrepare()
+    {
+        foreach (var pairs in _dialogMap)
+        {
+            var controller = pairs.Value.GetComponent<DialogController>();
+            controller.Close(null);
+        }
+    }
+
+
+
+
+    public void Regist(DialogType type, DialogController controller)
+    {
+        _dialogMap[type] = controller;
+    }
+
+    public void Push(DialogData data)
+    {
+        _dialogQueue.Add(data);
+
+        if (_currentDialog == null) { ShowNext(); }
+    }
+
+    public void Pop()
+    {
+        if (_currentDialog != null)
+        {
+            _currentDialog.Close(
+                delegate
+                {
+                    _currentDialog = null;
+
+                    if (_dialogQueue.Count > 0)
+                    {
+                        ShowNext();
+                    }
+                });
+        }
+    }
+
+    public bool IsShowing() => _currentDialog != null; //현재 팝업 창이 표시되어있는지를 확인하는 기능
+
+    private void ShowNext()
+    {
+        DialogData next = _dialogQueue[0];
+        DialogController dialogController = _dialogMap[next.Type].GetComponent<DialogController>();
+
+        _currentDialog = dialogController;
+
+        _currentDialog.Build(next);
+        _currentDialog.Show(delegate { }); //다이얼로그 보여주기
+        _dialogQueue.RemoveAt(0);
+    }
 }
